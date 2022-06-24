@@ -26,7 +26,7 @@ func Fibo[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](N V
 	N1 = 1
 	N2 = 1
 	for i = 2; i < N; i++ {
-		result, ok := int_maths.SAdd(N1, N2)
+		result, ok := SAdd(N1, N2)
 		if !ok {
 			return result, false
 		}
