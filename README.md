@@ -1,6 +1,6 @@
 # int-maths, Go mathematics for integers
 
-My firs public module for Go. It' a work in progress!
+My firs public module for Go. It' a work in progress! Use it at your own risks!
 
 ## safe operations on integers
 
