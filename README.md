@@ -8,10 +8,11 @@ I like Go but it has some annoying flaws. One of them is the lack of overflow an
 
 Here is a set of *pros* and *cons*:
 
-| ***Pros***                                               | ***Cons***                                                        |
-|----------------------------------------------------------|-------------------------------------------------------------------|
-| One funtion for all integer types, thanks to *generics*. | We use the reflect package, which is not so good for performances |
-| it's my first real project                               | it's my first real project                                        |
+| ***Pros***                                                | ***Cons***                                                        |
+|-----------------------------------------------------------|-------------------------------------------------------------------|
+| One function for all integer types, thanks to *generics*. | We use the `reflect` package, which is not so good for performances |
+|                                                           | `SAdd` and `SSub` are mutually recursive |
+| it's my first real project in Go                          | it's my first real project in Go                                  |
 
 ## the manual
 ### Safe operations
@@ -23,8 +24,8 @@ func SSub[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64]
         (a V, b V) 
         (V, bool)
 ```
-- **Explain**: Compute the diffrence betweeen two integers of the same size
-- ***Exemple***:
+- **Explain**: Compute the difference between two integers of the same size
+- ***Example***:
 ```Go
 var x uint16 = 60000
 var y uint16 = 30000 
@@ -41,7 +42,7 @@ func SAdd[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64]
         (V, bool)
 ```
 - **Explain**: Compute the sum of two integers of the same size
-***Exemple***
+***Example***
 ```Go
 var x uint16 = 60000
 var y uint16 = 30000 
@@ -58,7 +59,7 @@ func SMul[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64]
         (V, bool)
 ```
 - **Explain**: Compute the sum of two integers of the same size
-- ***Exemple***:
+- ***Example***:
 ```Go
 var x uint16 = 60000
 var y uint16 = 3 
