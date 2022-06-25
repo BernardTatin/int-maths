@@ -8,9 +8,14 @@
  * created: 2022-06-23
  */
 
+/*
+ * NOTE: only tested for int8 type
+ */
+
 package int_maths
 
 import (
+	"fmt"
 	"math"
 	"reflect"
 )
@@ -23,28 +28,45 @@ func SSub[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V
 		var t = reflect.TypeOf(a).Kind()
 		switch t {
 		case reflect.Int8:
-			good = int8(a) <= math.MaxInt8-int8(b)
+			good = int8(a)-math.MinInt8 >= int8(b)
 		case reflect.Int16:
-			good = int16(a) <= math.MaxInt16-int16(b)
+			good = int16(a)-math.MinInt16 >= int16(b)
 		case reflect.Int32:
-			good = int32(a) <= math.MaxInt32-int32(b)
+			good = int32(a)-math.MinInt32 >= int32(b)
 		case reflect.Int64:
-			good = int64(a) <= math.MaxInt64-int64(b)
+			good = int64(a)-math.MinInt64 >= int64(b)
 		case reflect.Uint8:
-			good = uint8(a) <= math.MaxUint8-uint8(b)
+			good = uint8(a) >= uint8(b)
 		case reflect.Uint16:
-			good = uint16(a) <= math.MaxUint16-uint16(b)
+			good = uint16(a) >= uint16(b)
 		case reflect.Uint32:
-			good = uint32(a) <= math.MaxUint32-uint32(b)
+			good = uint32(a) >= uint32(b)
 		case reflect.Uint64:
-			good = uint64(a) <= math.MaxUint64-uint64(b)
+			good = uint64(a) >= uint64(b)
 		}
 		return a + b, good
 	}
+	/*
+	   A = abs(a), B = abs(b)
+	   ! ------ ! a == 0 ! a < 0     ! a > 0  !
+	   ! b == 0 ! 0      ! a         ! a      !
+	   ! b < 0  ! -b     ! B - A     ! A + B  !
+	   ! b > 0  ! -b     ! -(A + b)  ! *****  !
+
+	   a > 0 && b > 0
+	   ! a > b ! a == b ! b > a    !
+	   ! a - b ! 0      ! -(b - a) !
+	*/
 	if a == 0 {
 		return -b, true
 	} else if b == 0 {
 		return a, true
+	} else if a < 0 && b < 0 {
+		return isub(-b, -a)
+	} else if a < 0 && b > 0 {
+		return SAdd(-a, -b)
+	} else if a > 0 && b < 0 {
+		return SAdd(a, -b)
 	} else if a < b {
 		c, good := isub(b, a)
 		return -c, good
@@ -59,6 +81,9 @@ func SAdd[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V
 	iadd = func(a V, b V) (V, bool) {
 		var good bool
 		var t = reflect.TypeOf(a).Kind()
+		if t != reflect.Int8 {
+			fmt.Printf("Bad type!\n")
+		}
 		switch t {
 		case reflect.Int8:
 			good = int8(a) <= math.MaxInt8-int8(b)
@@ -84,9 +109,12 @@ func SAdd[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V
 	} else if b == 0 {
 		return a, true
 	} else if a > 0 && b < 0 {
-		return SSub(a, b)
+		return SSub(a, -b)
 	} else if a < 0 && b > 0 {
-		return SSub(a, b)
+		return SSub(b, -a)
+	} else if a < 0 && b < 0 {
+		c, ok := iadd(-a, -b)
+		return -c, ok
 	} else {
 		return iadd(a, b)
 	}

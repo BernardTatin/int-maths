@@ -18,36 +18,54 @@ import (
 )
 
 func TestSAddI8(t *testing.T) {
-	var aFrom int16 = int16(math.MinInt8)
-	var aTo int16 = int16(math.MaxInt8)
-	var bFrom int16 = int16(math.MinInt8)
-	var bTo int16 = int16(math.MaxInt8)
-	var count, errors = 0, 0
-	var i, j int16
+	var aFrom int16 = int16(math.MinInt8) + 1
+	var aTo int16 = int16(math.MaxInt8) - 1
+	var bFrom int16 = int16(math.MinInt8) + 1
+	var bTo int16 = int16(math.MaxInt8) - 1
+	// var aFrom, aTo, bFrom, bTo int16 = -4, 4, -4, 4
+	var count, errors, goods = 0, 0, 0
+	var errors1 = 0
+	var errors2 = 0
+	var goods1 = 0
+	var goods2 = 0
+	var i int16
+	var j int16
 
 	for i = aFrom; i < aTo; i++ {
 		for j = bFrom; j < bTo; j++ {
 			var computed int8
 			var ok bool
 			var c int16 = i + j
-			var good bool = c >= int16(math.MinInt8) && c <= int16(math.MaxInt8)
 
 			count++
 			computed, ok = int_maths.SAdd(int8(i), int8(j))
-			if !good {
+			computed16 := int16(computed)
+			if c != computed16 {
 				if ok {
-					fmt.Printf("%d + %d gives %d instead of %d\n",
-						i, j, computed, c)
 					errors++
+					fmt.Printf("BAD1 ok true  %4d != %4d %4d + %4d\n",
+						computed16, c, i, j)
+					errors1++
+				} else {
+					goods++
+					goods1++
 				}
 			} else {
 				if !ok {
-					fmt.Printf("%d + %d gives %d instead of %d\n",
-						i, j, computed, c)
 					errors++
+					fmt.Printf("BAD2 ok false  %4d == %4d %4d + %4d\n",
+						computed16, c, i, j)
+					errors2++
+				} else {
+					goods++
+					goods2++
 				}
 			}
+
 		}
 	}
-	fmt.Printf("Tests: %d, errors: %d\n", count, errors)
+	fmt.Printf("Tests: %5d, goods: %5d, goods1: %5d, goods2: %5d\n",
+		count, goods, goods1, goods2)
+	fmt.Printf("Tests: %5d, errors: %5d, errors1: %5d, errors2: %5d (%5d)\n",
+		count, errors, errors1, errors2, errors-errors1-errors2)
 }
