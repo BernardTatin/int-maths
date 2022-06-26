@@ -1,6 +1,6 @@
 # int-maths, Go mathematics for integers
 
-My firs public module for Go. It' a work in progress! Use it at your own risks!
+My firs public module for Go. ***It' a work in progress!*** Use it at your own risks!
 
 ## safe operations on integers
 
@@ -16,13 +16,13 @@ Here is a set of *pros* and *cons*:
 
 ### tests
 
-|              | SSub   | SAdd       | SMul   |
-| ------------ | ------ | ---------- | ------ |
-| ***int8***   | *some* | ***full*** | none   |
-| ***int16***  | none   | none       | none   |
-| ***int32***  | none   | none       | none   |
-| ***int64***  | none   | *some*     | *some* |
-| ***uint8***  | none   | none       | none   |
-| ***uint16*** | none   | none       | none   |
-| ***uint32*** | none   | none       | none   |
-| ***uint64*** | none   | *some*     | *some* |
+|              | SSub          | SAdd          | SMul          |
+| ------------ | ------------- | ------------- | ------------- |
+| ***int8***   | ***partial*** | ***full***    | none          |
+| ***int16***  | none          | none          | none          |
+| ***int32***  | none          | none          | none          |
+| ***int64***  | none          | *some*        | *some*        |
+| ***uint8***  | ***partial*** | ***full***    | none          |
+| ***uint16*** | none          | none          | none          |
+| ***uint32*** | none          | none          | none          |
+| ***uint64*** | none          | ***partial*** | ***partial*** |

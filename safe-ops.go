@@ -15,11 +15,31 @@
 package int_maths
 
 import (
-	"fmt"
 	"math"
 	"reflect"
 )
 
+func is_signed[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V) bool {
+	switch reflect.TypeOf(a).Kind() {
+	case reflect.Int8:
+		return true
+	case reflect.Int16:
+		return true
+	case reflect.Int32:
+		return true
+	case reflect.Int64:
+		return true
+		// case reflect.Uint8:
+		// 	return false
+		// case reflect.Uint16:
+		// 	return false
+		// case reflect.Uint32:
+		// 	return false
+		// case reflect.Uint64:
+		// 	return false
+	}
+	return false
+}
 func SSub[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V, b V) (V, bool) {
 	var isub func(a V, b V) (V, bool)
 
@@ -58,21 +78,29 @@ func SSub[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V
 	   ! a - b ! 0      ! -(b - a) !
 	*/
 	// fmt.Printf("SSub %d, %d - %d\n", a, b, -b)
-	if a == 0 {
-		return -b, true
-	} else if b == 0 {
+	if b == 0 {
 		return a, true
-	} else if a < 0 && b < 0 {
-		return isub(-b, -a)
-	} else if a < 0 && b > 0 {
-		return SAdd(-a, -b)
-	} else if a > 0 && b < 0 {
-		return SAdd(a, -b)
-	} else if a < b {
-		c, good := isub(b, a)
-		return -c, good
+	} else if is_signed(a) {
+		if a == 0 {
+			return -b, true
+		} else if a < 0 && b < 0 {
+			return isub(-b, -a)
+		} else if a < 0 && b > 0 {
+			return SAdd(-a, -b)
+		} else if a > 0 && b < 0 {
+			return SAdd(a, -b)
+		} else if a < b {
+			c, good := isub(b, a)
+			return -c, good
+		} else {
+			return isub(a, b)
+		}
 	} else {
-		return isub(a, b)
+		if a < b {
+			return 0, false
+		} else {
+			return isub(a, b)
+		}
 	}
 }
 
@@ -83,9 +111,7 @@ func SAdd[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V
 		var good bool
 		var c = a + b
 		var t = reflect.TypeOf(a).Kind()
-		if t != reflect.Int8 {
-			fmt.Printf("Bad type!\n")
-		}
+
 		switch t {
 		case reflect.Int8:
 			good = int8(a) <= math.MaxInt8-int8(b)
@@ -111,22 +137,26 @@ func SAdd[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V
 		return b, true
 	} else if b == 0 {
 		return a, true
-	} else if a > 0 && b < 0 {
-		if -b == b {
-			return 0, false
+	} else if is_signed(a) {
+		if a > 0 && b < 0 {
+			if -b == b {
+				return 0, false
+			}
+			return SSub(a, -b)
+		} else if a < 0 && b > 0 {
+			if -a == a {
+				return 0, false
+			}
+			return SSub(b, -a)
+		} else if a < 0 && b < 0 {
+			if -a == a || -b == b {
+				return 0, false
+			}
+			c, ok := iadd(-a, -b)
+			return -c, ok
+		} else {
+			return iadd(a, b)
 		}
-		return SSub(a, -b)
-	} else if a < 0 && b > 0 {
-		if -a == a {
-			return 0, false
-		}
-		return SSub(b, -a)
-	} else if a < 0 && b < 0 {
-		if -a == a || -b == b {
-			return 0, false
-		}
-		c, ok := iadd(-a, -b)
-		return -c, ok
 	} else {
 		return iadd(a, b)
 	}
