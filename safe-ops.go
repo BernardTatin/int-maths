@@ -57,6 +57,7 @@ func SSub[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V
 	   ! a > b ! a == b ! b > a    !
 	   ! a - b ! 0      ! -(b - a) !
 	*/
+	// fmt.Printf("SSub %d, %d - %d\n", a, b, -b)
 	if a == 0 {
 		return -b, true
 	} else if b == 0 {
@@ -80,6 +81,7 @@ func SAdd[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V
 
 	iadd = func(a V, b V) (V, bool) {
 		var good bool
+		var c = a + b
 		var t = reflect.TypeOf(a).Kind()
 		if t != reflect.Int8 {
 			fmt.Printf("Bad type!\n")
@@ -102,17 +104,27 @@ func SAdd[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V
 		case reflect.Uint64:
 			good = uint64(a) <= math.MaxUint64-uint64(b)
 		}
-		return a + b, good
+		return c, good
 	}
+	// fmt.Printf("SAdd %d, %d - %d\n", a, b, -b)
 	if a == 0 {
 		return b, true
 	} else if b == 0 {
 		return a, true
 	} else if a > 0 && b < 0 {
+		if -b == b {
+			return 0, false
+		}
 		return SSub(a, -b)
 	} else if a < 0 && b > 0 {
+		if -a == a {
+			return 0, false
+		}
 		return SSub(b, -a)
 	} else if a < 0 && b < 0 {
+		if -a == a || -b == b {
+			return 0, false
+		}
 		c, ok := iadd(-a, -b)
 		return -c, ok
 	} else {
