@@ -19,7 +19,7 @@ Here is a set of *pros* and *cons*:
 |              | SSub          | SAdd          | SMul          |
 | ------------ | ------------- | ------------- | ------------- |
 | ***int8***   | ***partial*** | ***full***    | none          |
-| ***int16***  | none          | none          | none          |
+| ***int16***  | ***partial*** | ***full***    | none          |
 | ***int32***  | none          | none          | none          |
 | ***int64***  | none          | *some*        | *some*        |
 | ***uint8***  | ***partial*** | ***full***    | none          |

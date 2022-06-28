@@ -19,34 +19,28 @@ import (
 	"reflect"
 )
 
-func is_signed[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V) bool {
-	switch reflect.TypeOf(a).Kind() {
+func is_signed[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V) (bool, reflect.Kind) {
+	var k = reflect.TypeOf(a).Kind()
+	switch k {
 	case reflect.Int8:
-		return true
+		return true, k
 	case reflect.Int16:
-		return true
+		return true, k
 	case reflect.Int32:
-		return true
+		return true, k
 	case reflect.Int64:
-		return true
-		// case reflect.Uint8:
-		// 	return false
-		// case reflect.Uint16:
-		// 	return false
-		// case reflect.Uint32:
-		// 	return false
-		// case reflect.Uint64:
-		// 	return false
+		return true, k
 	}
-	return false
+	return false, k
 }
 func SSub[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V, b V) (V, bool) {
 	var isub func(a V, b V) (V, bool)
+	var signed, k = is_signed(a)
 
 	isub = func(a V, b V) (V, bool) {
 		var good bool
-		var t = reflect.TypeOf(a).Kind()
-		switch t {
+
+		switch k {
 		case reflect.Int8:
 			good = int8(a)-math.MinInt8 >= int8(b)
 		case reflect.Int16:
@@ -64,7 +58,7 @@ func SSub[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V
 		case reflect.Uint64:
 			good = uint64(a) >= uint64(b)
 		}
-		return a + b, good
+		return a - b, good
 	}
 	/*
 	   A = abs(a), B = abs(b)
@@ -80,7 +74,7 @@ func SSub[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V
 	// fmt.Printf("SSub %d, %d - %d\n", a, b, -b)
 	if b == 0 {
 		return a, true
-	} else if is_signed(a) {
+	} else if signed {
 		if a == 0 {
 			return -b, true
 		} else if a < 0 && b < 0 {
@@ -106,13 +100,12 @@ func SSub[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V
 
 func SAdd[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V, b V) (V, bool) {
 	var iadd func(a V, b V) (V, bool)
+	var signed, k = is_signed(a)
 
 	iadd = func(a V, b V) (V, bool) {
 		var good bool
-		var c = a + b
-		var t = reflect.TypeOf(a).Kind()
 
-		switch t {
+		switch k {
 		case reflect.Int8:
 			good = int8(a) <= math.MaxInt8-int8(b)
 		case reflect.Int16:
@@ -130,14 +123,14 @@ func SAdd[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V
 		case reflect.Uint64:
 			good = uint64(a) <= math.MaxUint64-uint64(b)
 		}
-		return c, good
+		return a + b, good
 	}
 	// fmt.Printf("SAdd %d, %d - %d\n", a, b, -b)
 	if a == 0 {
 		return b, true
 	} else if b == 0 {
 		return a, true
-	} else if is_signed(a) {
+	} else if signed {
 		if a > 0 && b < 0 {
 			if -b == b {
 				return 0, false
