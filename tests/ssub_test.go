@@ -81,7 +81,7 @@ func TestSSubU8(t *testing.T) {
 
 func TestSSubI16(t *testing.T) {
 	// var goodi16, badi16 = test_sub(int16(math.MinInt16), int16(math.MaxInt16))
-	var goodi16, badi16 = test_sub(int16(-512), int16(512))
+	var goodi16, badi16 = test_sub(int16(-0x2000), int16(0x2000))
 
 	fmt.Printf("int16:  goods %5d, bads %5d\n",
 		goodi16, badi16)
@@ -89,7 +89,7 @@ func TestSSubI16(t *testing.T) {
 
 func TestSSubU16(t *testing.T) {
 	// var goodu16, badu16 = test_sub(uint16(0), uint16(math.MaxUint16))
-	var goodu16, badu16 = test_sub(uint16(0), uint16(1024))
+	var goodu16, badu16 = test_sub(uint16(0), uint16(0x2000))
 
 	fmt.Printf("uint16:  goods %5d, bads %5d\n",
 		goodu16, badu16)
