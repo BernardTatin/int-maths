@@ -6,6 +6,9 @@
  * project: int-maths
  * by:      bernard
  * created: 2022-06-25
+ *
+ * Usage:
+ * go tests -v -timeout 0 [-cpu 4]
  */
 
 package tests
@@ -20,8 +23,9 @@ import (
 
 const verbose bool = false
 const verbose_mask int64 = 0xffff
+const i16_cpt = 0x400
 
-func test_add[V int8 | int16 | int32 | uint8 | uint16 | uint32](from V, to V) (int64, int64) {
+func test_add[V int8 | int16 | int32 | uint8 | uint16 | uint32](t *testing.T, from V, to V) (int64, int64) {
 	var k = reflect.TypeOf(from).Name()
 	var aFrom = int64(from)
 	var aTo = int64(to)
@@ -39,12 +43,12 @@ func test_add[V int8 | int16 | int32 | uint8 | uint16 | uint32](from V, to V) (i
 
 			count++
 			computed, ok = int_maths.SAdd(V(i), V(j))
-			computed16 := int64(computed)
-			if c != computed16 {
+			computed64 := int64(computed)
+			if c != computed64 {
 				if ok {
 					errors++
-					fmt.Printf("BAD %s ok true  %4d != %4d %4d + %4d\n",
-						k, computed16, c, i, j)
+					t.Logf("%s BAD %s ok true  %4d != %4d %4d + %4d\n",
+						t.Name(), k, computed64, c, i, j)
 				} else {
 					goods++
 				}
@@ -63,37 +67,53 @@ func test_add[V int8 | int16 | int32 | uint8 | uint16 | uint32](from V, to V) (i
 }
 
 /*
-	var goodu16, badu16 = test_add(uint16(0), uint16(0xe00))
+	var goods, bads = test_add(uint16(0), uint16(0xe00))
 	v0.1.1: min time 0.750 s
 	when is_signed returns the Kind(), we get 0.380 s
 */
 
 func TestSAddI8(t *testing.T) {
-	var goodi8, badi8 = test_add(int8(math.MinInt8), int8(math.MaxInt8))
+	var goods, bads = test_add(t, int8(math.MinInt8), int8(math.MaxInt8))
 
-	fmt.Printf("int8:  goods %5d, bads %5d\n",
-		goodi8, badi8)
+	message := fmt.Sprintf("%s:  goods %5d, bads %5d", t.Name(), goods, bads)
+	if bads != 0 {
+		t.Errorf("%s\n", message)
+	} else {
+		t.Logf("%s\n", message)
+	}
 }
 
 func TestSAddU8(t *testing.T) {
-	var goodu8, badu8 = test_add(uint8(0), uint8(math.MaxUint8))
+	var goods, bads = test_add(t, uint8(0), uint8(math.MaxUint8))
 
-	fmt.Printf("uint8: goods %5d, bads %5d\n",
-		goodu8, badu8)
+	message := fmt.Sprintf("%s:  goods %5d, bads %5d", t.Name(), goods, bads)
+	if bads != 0 {
+		t.Errorf("%s\n", message)
+	} else {
+		t.Logf("%s\n", message)
+	}
 }
 
 func TestSAddI16(t *testing.T) {
-	// var goodi16, badi16 = test_add(int16(math.MinInt16), int16(math.MaxInt16))
-	var goodi16, badi16 = test_add(int16(-0x2000), int16(0x2000))
+	// var goods, bads = test_add(t, int16(math.MinInt16), int16(math.MaxInt16))
+	var goods, bads = test_add(t, int16(-i16_cpt), int16(i16_cpt))
 
-	fmt.Printf("int16:  goods %5d, bads %5d\n",
-		goodi16, badi16)
+	message := fmt.Sprintf("%s:  goods %5d, bads %5d", t.Name(), goods, bads)
+	if bads != 0 {
+		t.Errorf("%s\n", message)
+	} else {
+		t.Logf("%s\n", message)
+	}
 }
 
 func TestSAddU16(t *testing.T) {
-	// var goodu16, badu16 = test_add(uint16(0), uint16(math.MaxUint16))
-	var goodu16, badu16 = test_add(uint16(0), uint16(0x2000))
+	// var goods, bads = test_add(t, uint16(0), uint16(math.MaxUint16))
+	var goods, bads = test_add(t, uint16(0), uint16(i16_cpt))
 
-	fmt.Printf("uint16:  goods %5d, bads %5d\n",
-		goodu16, badu16)
+	message := fmt.Sprintf("%s:  goods %5d, bads %5d", t.Name(), goods, bads)
+	if bads != 0 {
+		t.Errorf("%s\n", message)
+	} else {
+		t.Logf("%s\n", message)
+	}
 }

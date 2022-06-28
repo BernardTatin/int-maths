@@ -8,10 +8,6 @@
  * created: 2022-06-23
  */
 
-/*
- * NOTE: only tested for int8 type
- */
-
 package int_maths
 
 import (
@@ -19,46 +15,51 @@ import (
 	"reflect"
 )
 
-func is_signed[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V) (bool, reflect.Kind, int64) {
+func is_signed[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V) (bool, int64, uint64) {
 	var k = reflect.TypeOf(a).Kind()
 	switch k {
 	case reflect.Int8:
-		return true, k, math.MinInt8
+		return true, math.MinInt8, math.MaxInt8
 	case reflect.Int16:
-		return true, k, math.MinInt16
+		return true, math.MinInt16, math.MaxInt16
 	case reflect.Int32:
-		return true, k, math.MinInt32
+		return true, math.MinInt32, math.MaxInt32
 	case reflect.Int64:
-		return true, k, math.MinInt64
+		return true, math.MinInt64, math.MaxInt64
+
+	case reflect.Uint8:
+		return false, 0, math.MaxUint8
+	case reflect.Uint16:
+		return false, 0, math.MaxUint16
+	case reflect.Uint32:
+		return false, 0, math.MaxUint32
+	case reflect.Uint64:
+		return false, 0, math.MaxUint64
 	}
-	return false, k, 0
+	return false, 0, 0
 }
 func SSub[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V, b V) (V, bool) {
 	var isub func(a V, b V) (V, bool)
-	var signed, k, smini = is_signed(a)
+	var iadd func(a V, b V) (V, bool)
+	var signed, smini0, smaxi0 = is_signed(a)
+	var smini V = V(smini0)
+	var smaxi V = V(smaxi0)
 
 	isub = func(a V, b V) (V, bool) {
 		var good bool
 
-		switch k {
-		case reflect.Int8:
-			good = int8(a)-int8(smini) >= int8(b)
-		case reflect.Int16:
-			good = int16(a)-int16(smini) >= int16(b)
-		case reflect.Int32:
-			good = int32(a)-int32(smini) >= int32(b)
-		case reflect.Int64:
-			good = int64(a)-int64(smini) >= int64(b)
-		case reflect.Uint8:
-			good = uint8(a) >= uint8(b)
-		case reflect.Uint16:
-			good = uint16(a) >= uint16(b)
-		case reflect.Uint32:
-			good = uint32(a) >= uint32(b)
-		case reflect.Uint64:
-			good = uint64(a) >= uint64(b)
+		if signed {
+			good = a-smini >= b
+		} else {
+			good = a >= b
 		}
 		return a - b, good
+	}
+	iadd = func(a V, b V) (V, bool) {
+		var good bool
+
+		good = a <= smaxi-b
+		return a + b, good
 	}
 	/*
 	   A = abs(a), B = abs(b)
@@ -75,31 +76,26 @@ func SSub[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V
 	if b == 0 {
 		return a, true
 	} else if signed {
-		if a == 0 {
-			if b == V(smini) {
-				return 0, false
+		if b == smini {
+			return 0, false
+		}
+		if a == smini && b > 0 {
+			return 0, false
+		}
+		if a < 0 {
+			if b < 0 {
+				return isub(-b, -a)
+			} else {
+				return iadd(-a, -b)
 			}
+		} else if a > 0 {
+			if b < 0 {
+				return iadd(a, -b)
+			} else {
+				return isub(a, b)
+			}
+		} else if a == 0 {
 			return -b, true
-		} else if a < 0 && b < 0 {
-			if a == V(smini) || b == V(smini) {
-				return 0, false
-			}
-			return isub(-b, -a)
-		} else if a < 0 && b > 0 {
-			if a == V(smini) || b == V(smini) {
-				return 0, false
-			}
-			return SAdd(-a, -b)
-		} else if a > 0 && b < 0 {
-			if b == V(smini) {
-				return 0, false
-			}
-			return SAdd(a, -b)
-		} else if a < b {
-			c, good := isub(b, a)
-			return -c, good
-		} else {
-			return isub(a, b)
 		}
 	} else {
 		if a < b {
@@ -108,34 +104,27 @@ func SSub[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V
 			return isub(a, b)
 		}
 	}
+	return isub(a, b)
 }
 
 func SAdd[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V, b V) (V, bool) {
+	var isub func(a V, b V) (V, bool)
 	var iadd func(a V, b V) (V, bool)
-	var signed, k, smini = is_signed(a)
+	var signed, smini0, smaxi0 = is_signed(a)
+	var smini V = V(smini0)
+	var smaxi V = V(smaxi0)
 
 	iadd = func(a V, b V) (V, bool) {
 		var good bool
 
-		switch k {
-		case reflect.Int8:
-			good = int8(a) <= math.MaxInt8-int8(b)
-		case reflect.Int16:
-			good = int16(a) <= math.MaxInt16-int16(b)
-		case reflect.Int32:
-			good = int32(a) <= math.MaxInt32-int32(b)
-		case reflect.Int64:
-			good = int64(a) <= math.MaxInt64-int64(b)
-		case reflect.Uint8:
-			good = uint8(a) <= math.MaxUint8-uint8(b)
-		case reflect.Uint16:
-			good = uint16(a) <= math.MaxUint16-uint16(b)
-		case reflect.Uint32:
-			good = uint32(a) <= math.MaxUint32-uint32(b)
-		case reflect.Uint64:
-			good = uint64(a) <= math.MaxUint64-uint64(b)
-		}
+		good = a <= smaxi-b
 		return a + b, good
+	}
+	isub = func(a V, b V) (V, bool) {
+		var good bool
+
+		good = a-smini >= b
+		return a - b, good
 	}
 	// fmt.Printf("SAdd %d, %d - %d\n", a, b, -b)
 	if a == 0 {
@@ -144,17 +133,17 @@ func SAdd[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V
 		return a, true
 	} else if signed {
 		if a > 0 && b < 0 {
-			if V(smini) == b {
+			if smini == b {
 				return 0, false
 			}
-			return SSub(a, -b)
+			return isub(a, -b)
 		} else if a < 0 && b > 0 {
-			if V(smini) == a {
+			if smini == a {
 				return 0, false
 			}
-			return SSub(b, -a)
+			return isub(b, -a)
 		} else if a < 0 && b < 0 {
-			if V(smini) == a || V(smini) == b {
+			if smini == a || smini == b {
 				return 0, false
 			}
 			c, ok := iadd(-a, -b)
