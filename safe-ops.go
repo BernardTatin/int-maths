@@ -76,12 +76,24 @@ func SSub[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V
 		return a, true
 	} else if signed {
 		if a == 0 {
+			if -b == b {
+				return 0, false
+			}
 			return -b, true
 		} else if a < 0 && b < 0 {
+			if -a == a || -b == b {
+				return 0, false
+			}
 			return isub(-b, -a)
 		} else if a < 0 && b > 0 {
+			if -a == a || -b == b {
+				return 0, false
+			}
 			return SAdd(-a, -b)
 		} else if a > 0 && b < 0 {
+			if -b == b {
+				return 0, false
+			}
 			return SAdd(a, -b)
 		} else if a < b {
 			c, good := isub(b, a)
