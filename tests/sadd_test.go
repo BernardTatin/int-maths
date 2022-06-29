@@ -75,45 +75,25 @@ func test_add[V int8 | int16 | int32 | uint8 | uint16 | uint32](t *testing.T, fr
 func TestSAddI8(t *testing.T) {
 	var goods, bads = test_add(t, int8(math.MinInt8), int8(math.MaxInt8))
 
-	message := fmt.Sprintf("%s:  goods %5d, bads %5d", t.Name(), goods, bads)
-	if bads != 0 {
-		t.Errorf("%s\n", message)
-	} else {
-		t.Logf("%s\n", message)
-	}
+	end_of_test(t, goods, bads)
 }
 
 func TestSAddU8(t *testing.T) {
 	var goods, bads = test_add(t, uint8(0), uint8(math.MaxUint8))
 
-	message := fmt.Sprintf("%s:  goods %5d, bads %5d", t.Name(), goods, bads)
-	if bads != 0 {
-		t.Errorf("%s\n", message)
-	} else {
-		t.Logf("%s\n", message)
-	}
+	end_of_test(t, goods, bads)
 }
 
 func TestSAddI16(t *testing.T) {
 	// var goods, bads = test_add(t, int16(math.MinInt16), int16(math.MaxInt16))
 	var goods, bads = test_add(t, int16(-i16_cpt), int16(i16_cpt))
 
-	message := fmt.Sprintf("%s:  goods %5d, bads %5d", t.Name(), goods, bads)
-	if bads != 0 {
-		t.Errorf("%s\n", message)
-	} else {
-		t.Logf("%s\n", message)
-	}
+	end_of_test(t, goods, bads)
 }
 
 func TestSAddU16(t *testing.T) {
 	// var goods, bads = test_add(t, uint16(0), uint16(math.MaxUint16))
 	var goods, bads = test_add(t, uint16(0), uint16(i16_cpt))
 
-	message := fmt.Sprintf("%s:  goods %5d, bads %5d", t.Name(), goods, bads)
-	if bads != 0 {
-		t.Errorf("%s\n", message)
-	} else {
-		t.Logf("%s\n", message)
-	}
+	end_of_test(t, goods, bads)
 }
