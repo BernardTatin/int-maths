@@ -35,3 +35,11 @@ Here is a set of *pros* and *cons*:
 | ***uint16*** | ***full*** | ***full***    | none          |
 | ***uint32*** | none       | none          | none          |
 | ***uint64*** | none       | ***partial*** | ***partial*** |
+
+## integer sequences
+
+We have:
+
+- `Fibo`, 
+
+- `Fact`.
