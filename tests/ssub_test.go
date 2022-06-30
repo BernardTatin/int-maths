@@ -14,7 +14,6 @@
 package tests
 
 import (
-	"fmt"
 	int_maths "github.com/BernardTatin/int-maths"
 	"math"
 	"reflect"
@@ -29,7 +28,6 @@ func test_sub[V int8 | int16 | int32 | uint8 | uint16 | uint32](t *testing.T, fr
 	var bTo = int64(to)
 	var count, errors, goods int64 = 0, 0, 0
 	var i, j int64
-	var cpt int64 = 0
 
 	for i = aFrom; i <= aTo; i++ {
 		for j = bFrom; j <= bTo; j++ {
@@ -39,22 +37,22 @@ func test_sub[V int8 | int16 | int32 | uint8 | uint16 | uint32](t *testing.T, fr
 
 			count++
 			computed, ok = int_maths.SSub(V(i), V(j))
-			computed16 := int64(computed)
-			if c != computed16 {
+			computed64 := int64(computed)
+			if c != computed64 {
 				if ok {
 					errors++
 					t.Logf("%s BAD %s ok true  %4d != %4d %4d - %4d\n",
-						t.Name(), k, computed16, c, i, j)
+						t.Name(), k, computed64, c, V(i), V(j))
 				} else {
 					goods++
 				}
 			} else {
-				goods++
-			}
-			if verbose {
-				cpt++
-				if (cpt & verbose_mask) == verbose_mask {
-					fmt.Printf(" + %s: %08xX - \n", k, cpt+1)
+				if !ok {
+					errors++
+					t.Logf("%s BAD %s ok FALSE  %4d == %4d %4d - %4d\n",
+						t.Name(), k, computed64, c, V(i), V(j))
+				} else {
+					goods++
 				}
 			}
 		}

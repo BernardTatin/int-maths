@@ -14,16 +14,11 @@
 package tests
 
 import (
-	"fmt"
 	int_maths "github.com/BernardTatin/int-maths"
 	"math"
 	"reflect"
 	"testing"
 )
-
-const verbose bool = false
-const verbose_mask int64 = 0xffff
-const i16_cpt = 0x400
 
 func test_add[V int8 | int16 | int32 | uint8 | uint16 | uint32](t *testing.T, from V, to V) (int64, int64) {
 	var k = reflect.TypeOf(from).Name()
@@ -33,7 +28,6 @@ func test_add[V int8 | int16 | int32 | uint8 | uint16 | uint32](t *testing.T, fr
 	var bTo = int64(to)
 	var count, errors, goods int64 = 0, 0, 0
 	var i, j int64
-	var cpt int64 = 0
 
 	for i = aFrom; i <= aTo; i++ {
 		for j = bFrom; j <= bTo; j++ {
@@ -55,22 +49,10 @@ func test_add[V int8 | int16 | int32 | uint8 | uint16 | uint32](t *testing.T, fr
 			} else {
 				goods++
 			}
-			if verbose {
-				cpt++
-				if (cpt & verbose_mask) == verbose_mask {
-					fmt.Printf(" + %s: %08xX - \n", k, cpt+1)
-				}
-			}
 		}
 	}
 	return goods, errors
 }
-
-/*
-	var goods, bads = test_add(uint16(0), uint16(0xe00))
-	v0.1.1: min time 0.750 s
-	when is_signed returns the Kind(), we get 0.380 s
-*/
 
 func TestSAddI8(t *testing.T) {
 	var goods, bads = test_add(t, int8(math.MinInt8), int8(math.MaxInt8))

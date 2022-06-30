@@ -15,6 +15,8 @@ import (
 	"testing"
 )
 
+const i16_cpt = 0x40
+
 func end_of_test(t *testing.T, goods int64, bads int64) {
 	message := fmt.Sprintf("%s:  goods %5d, bads %5d", t.Name(), goods, bads)
 	if bads != 0 {

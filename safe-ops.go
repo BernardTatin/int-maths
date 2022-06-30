@@ -44,11 +44,13 @@ func SSub[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V
 	var signed, smini0, smaxi0 = is_signed(a)
 	var smini V = V(smini0)
 	var smaxi V = V(smaxi0)
+	var A, B V = -a, -b
 
 	isub = func(a V, b V) (V, bool) {
 		var good bool
 
 		if signed {
+			// something is misunderstood there!
 			good = a-smini >= b
 		} else {
 			good = a >= b
@@ -82,17 +84,25 @@ func SSub[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V
 		if a == smini && b > 0 {
 			return 0, false
 		}
+		if a == smini && b < 0 {
+			return iadd(a, B)
+		}
 		if a < 0 {
 			if b < 0 {
-				return isub(-b, -a)
+				// -A - (-B) -> B - A
+				return isub(B, A)
 			} else {
-				return iadd(-a, -b)
+				// -A - B -> -(A + B)
+				c, ok := iadd(A, B)
+				return -c, ok
 			}
 		} else if a > 0 {
 			if b < 0 {
-				return iadd(a, -b)
+				// A - (-B) -> A + B
+				return iadd(A, B)
 			} else {
-				return isub(a, b)
+				// A - B
+				return isub(A, B)
 			}
 		} else if a == 0 {
 			return -b, true
@@ -126,7 +136,6 @@ func SAdd[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V
 		good = a-smini >= b
 		return a - b, good
 	}
-	// fmt.Printf("SAdd %d, %d - %d\n", a, b, -b)
 	if a == 0 {
 		return b, true
 	} else if b == 0 {
