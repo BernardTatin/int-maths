@@ -38,20 +38,27 @@ func is_signed[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64
 	}
 	return false, 0, 0
 }
+func iabs[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V) V {
+	if a < 0 {
+		return -a
+	} else {
+		return a
+	}
+}
 func SSub[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V, b V) (V, bool) {
 	var isub func(a V, b V) (V, bool)
 	var iadd func(a V, b V) (V, bool)
 	var signed, smini0, smaxi0 = is_signed(a)
 	var smini V = V(smini0)
 	var smaxi V = V(smaxi0)
-	var A, B V = -a, -b
+	var A, B V = iabs(a), iabs(b)
 
 	isub = func(a V, b V) (V, bool) {
 		var good bool
 
 		if signed {
 			// something is misunderstood there!
-			good = a-smini >= b
+			good = a-smini <= b
 		} else {
 			good = a >= b
 		}
@@ -102,7 +109,7 @@ func SSub[V int8 | int16 | int32 | int64 | uint8 | uint16 | uint32 | uint64](a V
 				return iadd(A, B)
 			} else {
 				// A - B
-				return isub(A, B)
+				return isub(a, b)
 			}
 		} else if a == 0 {
 			return -b, true

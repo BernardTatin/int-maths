@@ -18,10 +18,11 @@ The two parameters must be of the same type and one of `int8` to `int64` or `uin
 
 Here is a set of *pros* and *cons*:
 
-| ***Pros***                                                | ***Cons***                                                          |
-| --------------------------------------------------------- | ------------------------------------------------------------------- |
-| it's my first real project in *Go*                        | it's my first real project in *Go*                                  |
-| One function for all integer types, thanks to *generics*. | We use the `reflect` package, which is not so good for performances |
+| ***Pros***                                                | ***Cons***                                                                                   |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| it's my first real project in *Go*                        | it's my first real project in *Go*                                                           |
+| One function for all integer types, thanks to *generics*. | We use the `reflect` package, which is not so good for performances                          |
+|                                                           | **Bug**: for signed values, when `a-b == math.MinIntXX` (*cf.* the [manual page](MANUAL.md)) |
 
 ### tests
 

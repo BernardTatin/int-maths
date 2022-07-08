@@ -4,7 +4,7 @@
 
 ### `SSub`
 
-- **Note**: Not well tested
+- **Note**: tested and buggy
 
 - **Syntax**:
   
@@ -14,7 +14,7 @@
         (V, bool)
   ```
 
-- **Explain**: Compute the difference between two integers of the same size
+- **Returns**: Compute the difference between two integers of the same size and a boolean telling if overflow occurs. When overflow, the computed value is not accurate and the boolean is false.
 
 - ***Example***:
   
